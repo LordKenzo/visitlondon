@@ -87,3 +87,22 @@ exports.default = callbackError;
 ```
 
 In Gulp@4 le task sincrone non sono più supportate per evitare errori subdoli difficili da scovare, come scordarsi di tornare uno streams da una task. Per questo la nostra task
+
+# Auto-prefixer
+
+Installo:
+
+```
+npm i -D gulp-autoprefixer
+```
+
+e configuro, provando questa regola css:
+
+```css
+h1:hover {
+  transition: color 1s ease;
+}
+```
+
+e verifico che venga creato un css con la regola `-webkit-transition`.
+E' importante mettere l'autoprefixer prima del preprocessore SASS nella task Gulp ed infine la creazione con `dest`.

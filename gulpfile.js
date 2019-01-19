@@ -3,6 +3,7 @@ const sass = require('gulp-sass');
 // docs: https://browsersync.io/docs/gulp
 const browserSync = require('browser-sync');
 const server = browserSync.create();
+const autoprefixer = require('gulp-autoprefixer');
 
 const appPath = {
   dist: {
@@ -12,6 +13,7 @@ const appPath = {
   },
   source: {
     sassSource: 'src/scss/**/*.scss',
+    html: 'src/**/*.html',
   },
 };
 
@@ -22,7 +24,13 @@ function compileSass() {
   // Returning a stream
   console.log('compile Sass');
   return src(appPath.source.sassSource)
-    .pipe(sass({ outputStyle: 'expanded' }).on('error', sass.logError))
+    .pipe(
+      autoprefixer({
+        browsers: ['last 2 versions'],
+        cascade: false,
+      }),
+    )
+    .pipe(sass({ outputStyle: 'expanded' }).on('error', sass.logError)) //compact-compress-expanded
     .pipe(dest(appPath.dist.css))
     .pipe(browserSync.stream());
 }
@@ -38,14 +46,21 @@ async function serve(/*done*/) {
   // done();
 }
 
+/* Copy Source files */
+function copyHTML(done) {
+  src(appPath.source.html).pipe(dest(appPath.dist.root));
+  done();
+}
+
 /* Watch for change */
 function watchWork(done) {
   watch(appPath.source.sassSource, compileSass);
+  watch(appPath.source.html).on('change', copyHTML);
   watch(appPath.dist.root).on('change', server.reload);
   done();
 }
 
 /* Tasks */
-const build = series(compileSass, serve, watchWork);
+const build = series(copyHTML, compileSass, serve, watchWork);
 // exports.watchWork = watchWork; // make it private
 exports.default = build;
