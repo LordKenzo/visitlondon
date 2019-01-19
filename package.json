@@ -21,5 +21,9 @@
   "bugs": {
     "url": "https://github.com/LordKenzo/workflow/issues"
   },
-  "homepage": "https://github.com/LordKenzo/workflow#readme"
+  "homepage": "https://github.com/LordKenzo/workflow#readme",
+  "devDependencies": {
+    "gulp": "^4.0.0",
+    "gulp-sass": "^4.0.2"
+  }
 }
