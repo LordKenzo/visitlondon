@@ -19,6 +19,7 @@ sass.compiler = require('node-sass');
 
 /* Styles */
 function compileSass() {
+  // Returning a stream
   console.log('compile Sass');
   return src(appPath.source.sassSource)
     .pipe(sass({ outputStyle: 'expanded' }).on('error', sass.logError))
@@ -27,23 +28,24 @@ function compileSass() {
 }
 
 /* Server */
-function serve(done) {
-  console.log('Start Server but before need Sass');
-  server.init({
+async function serve(/*done*/) {
+  console.log('Start Server');
+  await server.init({
     server: {
       baseDir: appPath.dist.root,
     },
   });
-  done();
+  // done();
 }
 
 /* Watch for change */
-function watchWork() {
+function watchWork(done) {
   watch(appPath.source.sassSource, compileSass);
   watch(appPath.dist.root).on('change', server.reload);
+  done();
 }
 
 /* Tasks */
-const dev = series(compileSass, serve, watchWork);
-exports.watchWork = watchWork;
-exports.default = dev;
+const build = series(compileSass, serve, watchWork);
+// exports.watchWork = watchWork; // make it private
+exports.default = build;
