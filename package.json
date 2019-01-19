@@ -1,0 +1,25 @@
+{
+  "name": "workflow",
+  "version": "1.0.0",
+  "description": "Web workflow with NPM, SASS, Gulp and More",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://lordkenzo@github.com/LordKenzo/workflow.git"
+  },
+  "keywords": [
+    "NPM",
+    "SASS",
+    "Gulp",
+    "Git"
+  ],
+  "author": "Lorenzo Franceschini <lordkenzo@outlook.it>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LordKenzo/workflow/issues"
+  },
+  "homepage": "https://github.com/LordKenzo/workflow#readme"
+}
