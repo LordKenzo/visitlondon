@@ -88,12 +88,12 @@ exports.default = callbackError;
 
 In Gulp@4 le task sincrone non sono più supportate per evitare errori subdoli difficili da scovare, come scordarsi di tornare uno streams da una task. Per questo la nostra task
 
-# Auto-prefixer
+# Auto-prefixer e clean
 
 Installo:
 
 ```
-npm i -D gulp-autoprefixer
+npm i -D gulp-autoprefixer gulp-clean
 ```
 
 e configuro, provando questa regola css:

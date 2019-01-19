@@ -4,6 +4,7 @@ const sass = require('gulp-sass');
 const browserSync = require('browser-sync');
 const server = browserSync.create();
 const autoprefixer = require('gulp-autoprefixer');
+const clean = require('gulp-clean');
 
 const appPath = {
   dist: {
@@ -47,20 +48,26 @@ async function serve(/*done*/) {
 }
 
 /* Copy Source files */
-function copyHTML(done) {
-  src(appPath.source.html).pipe(dest(appPath.dist.root));
-  done();
+function copyHTML() {
+  return src(appPath.source.html).pipe(dest(appPath.dist.root));
+}
+
+/* Remove HTML file from dist */
+function cleanHTML() {
+  return src(appPath.dist.root + '/**/*.html', { read: false, force: true }).pipe(clean());
 }
 
 /* Watch for change */
 function watchWork(done) {
   watch(appPath.source.sassSource, compileSass);
-  watch(appPath.source.html).on('change', copyHTML);
+  watch(appPath.source.html).on('all', series(cleanHTML, copyHTML));
   watch(appPath.dist.root).on('change', server.reload);
   done();
 }
 
 /* Tasks */
-const build = series(copyHTML, compileSass, serve, watchWork);
+const html = series(cleanHTML, copyHTML);
+const style = series(compileSass);
+const build = series(html, style, serve, watchWork);
 // exports.watchWork = watchWork; // make it private
 exports.default = build;
