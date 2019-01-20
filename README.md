@@ -106,3 +106,25 @@ h1:hover {
 
 e verifico che venga creato un css con la regola `-webkit-transition`.
 E' importante mettere l'autoprefixer prima del preprocessore SASS nella task Gulp ed infine la creazione con `dest`.
+
+## Concatenate different JavaScript files
+
+Install: `npm i -D gulp-concat`.
+
+Creo la task `scripts`.
+
+Attenzione, questa task concatena file JavaScript, per creare un bundle più serio, ho installato:
+
+```
+npm i -D @babel/core @babel/preset-env babel-loader gulp-plumber gulp-uglify webpack webpack-stream
+```
+
+per creare un bundle con webpack e babel e fare la minificazione con uglify. In questo modo posso scrivere anche codice ES6.
+
+Ho creato in più il file .babelrc ed il file di webpack.config.js ;)
+
+### Link utili
+
+https://www.joezimjs.com/javascript/complete-guide-upgrading-gulp-4/
+https://github.com/jeromecoupe/jeromecoupe.github.io/blob/master/gulpfile.js
+https://github.com/gulpjs/vinyl-fs/issues/292
