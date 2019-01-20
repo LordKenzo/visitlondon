@@ -14,7 +14,8 @@ const appPath = {
   },
   source: {
     sassSource: 'src/scss/**/*.scss',
-    html: 'src/**/*.html',
+    htmlSource: 'src/**/*.html',
+    jsSource: 'src/js/*.js',
   },
 };
 
@@ -36,6 +37,16 @@ function compileSass() {
     .pipe(browserSync.stream());
 }
 
+/* JavaScript files */
+function scripts() {
+  return src(appPath.source.jsSource).pipe(dest(appPath.dist.js));
+}
+
+/* Remove Scripts file from dist */
+function cleanScripts() {
+  return src(appPath.dist.root + '/**/*.js', { read: false, force: true }).pipe(clean());
+}
+
 /* Server */
 async function serve(/*done*/) {
   console.log('Start Server');
@@ -49,7 +60,7 @@ async function serve(/*done*/) {
 
 /* Copy Source files */
 function copyHTML() {
-  return src(appPath.source.html).pipe(dest(appPath.dist.root));
+  return src(appPath.source.htmlSource).pipe(dest(appPath.dist.root));
 }
 
 /* Remove HTML file from dist */
@@ -60,7 +71,8 @@ function cleanHTML() {
 /* Watch for change */
 function watchWork(done) {
   watch(appPath.source.sassSource, compileSass);
-  watch(appPath.source.html).on('all', series(cleanHTML, copyHTML));
+  watch(appPath.source.htmlSource).on('all', series(cleanHTML, copyHTML));
+  watch(appPath.source.jsSource).on('all', series(cleanScripts, scripts));
   watch(appPath.dist.root).on('change', server.reload);
   done();
 }
@@ -68,6 +80,7 @@ function watchWork(done) {
 /* Tasks */
 const html = series(cleanHTML, copyHTML);
 const style = series(compileSass);
-const build = series(html, style, serve, watchWork);
+const js = series(cleanScripts);
+const build = series(html, style, js, serve, watchWork);
 // exports.watchWork = watchWork; // make it private
 exports.default = build;
