@@ -119,6 +119,18 @@ Attenzione, questa task concatena file JavaScript, per creare un bundle più ser
 npm i -D @babel/core @babel/preset-env babel-loader gulp-plumber gulp-uglify webpack webpack-stream
 ```
 
+Gulp-uglify lo uso al posto di gulp-minify per comprimere i file JavaScript.
+Gulp-plumber mi permette di gestire eventuali errori, es un task che farò più avanti:
+
+```js
+.pipe(
+  plumber(err => {
+    console.log(err);
+    done();
+  }),
+)
+```
+
 # Bundle con Webpack
 
 Per creare un bundle con webpack e babel e fare la minificazione con uglify. In questo modo posso scrivere anche codice ES6 e creare codice JavaScript con dipendenze con require o import.
@@ -160,6 +172,16 @@ Gulp-newer processa solo i file nuovi. In questo caso se l'immagine non è stata
 Installo: `npm install gulp-preprocess --save-dev`.
 
 Posso togliere il task di copyHTML e fare un unico task html per il preprocessamento dei file parzili, oppure farlo nel task copyHTML.
+
+# Minificazione dei CSS
+
+Uso CSSNano che passo come plugin a Gulp-postcss:
+
+```
+npm i -D cssnano gulp-postcss
+```
+
+Ad es. sono passato da 189k a 152k.
 
 ### Link utili
 

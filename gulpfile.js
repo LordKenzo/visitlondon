@@ -22,6 +22,12 @@ const newer = require('gulp-newer');
 const imagemin = require('gulp-imagemin');
 /* HTML Parziali */
 const preprocess = require('gulp-preprocess');
+/* CSS Minification */
+const cssnano = require('cssnano');
+const postcss = require('gulp-postcss');
+const rename = require('gulp-rename');
+
+const NODE_ENV = 'production';
 
 const appPath = {
   dist: {
@@ -57,6 +63,8 @@ function compileSass() {
     merge(sassFiles, bootstrapCSS)
       //compact-compress-expanded
       .pipe(concat('app.css'))
+      .pipe(rename({ suffix: NODE_ENV === 'production' ? '.min' : '' }))
+      .pipe(postcss(NODE_ENV === 'production' ? [cssnano()] : []))
       .pipe(dest(appPath.dist.css))
       .pipe(browserSync.stream())
   );
@@ -106,7 +114,7 @@ function copyHTML(done) {
         done();
       }),
     )
-    .pipe(preprocess({ context: { NODE_ENV: 'production', DEBUG: true } })) // To set environment variables in-line
+    .pipe(preprocess({ context: { NODE_ENV, DEBUG: true } })) // To set environment variables in-line
     .pipe(dest(appPath.dist.root));
 }
 
