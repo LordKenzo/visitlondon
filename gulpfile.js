@@ -20,11 +20,13 @@ const merge = require('merge-stream');
 
 const appPath = {
   dist: {
+    assets: 'app/dist/assets',
     root: 'app/',
     css: 'app/dist/css',
     js: 'app/dist/js',
   },
   source: {
+    assets: 'src/assets/**/*',
     sassSource: 'src/scss/**/*.scss',
     htmlSource: 'src/**/*.html',
     jsSource: 'src/js/**/*.js',
@@ -96,6 +98,11 @@ function cleanHTML() {
   return src(appPath.dist.root + '/**/*.html', { read: false, force: true }).pipe(clean());
 }
 
+function copyAssets() {
+  return src(appPath.source.assets)
+    .pipe(dest(appPath.dist.assets));
+}
+
 /* Watch for change */
 function watchWork(done) {
   watch(appPath.source.sassSource).on('all', compileSass);
@@ -109,7 +116,7 @@ function watchWork(done) {
 const html = series(copyHTML);
 const style = series(compileSass);
 const js = series(bundleJS);
-const build = series(cleanDist, parallel(style, html, js), serve, watchWork);
+const build = series(cleanDist, parallel(style, html, js, copyAssets), serve, watchWork);
 // exports.watchWork = watchWork; // make it private
 exports.default = build;
-exports.concat = series(cleanDist, watchWork, parallel(style, html, scripts), serve);
+exports.concat = series(cleanDist, watchWork, parallel(style, html, scripts, copyAssets), serve);

@@ -113,13 +113,13 @@ Install: `npm i -D gulp-concat`.
 
 Creo la task `scripts`.
 
-Attenzione, questa task concatena file JavaScript, per creare un bundle più serio, ho installato:
+Attenzione, questa task concatena file JavaScript, per creare un bundle più serio, ho installato **Webpack**:
 
 ```
 npm i -D @babel/core @babel/preset-env babel-loader gulp-plumber gulp-uglify webpack webpack-stream
 ```
 
-# Bundle
+# Bundle con Webpack
 
 Per creare un bundle con webpack e babel e fare la minificazione con uglify. In questo modo posso scrivere anche codice ES6 e creare codice JavaScript con dipendenze con require o import.
 
