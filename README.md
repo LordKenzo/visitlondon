@@ -133,7 +133,27 @@ La scelta ad oggi è orientata ad utilizzare Webpack in solitaria come bundler e
 
 # Bootstrap e Jquery
 
-Installo: `npm i bootstrap popper.js jquery`
+Installo: `npm i bootstrap popper.js jquery`.
+
+Con Bootstrap 4 ho avuto qualche problema di conversione per visualizzare correttamente la gallery:
+
+sostiuisci:
+
+```js
+$('#gallery').html(showTemplate);
+```
+
+con:
+
+```js
+$('#gallery').replaceWith(showTemplate);
+```
+
+# Image Minification
+
+Installa: `npm install -D gulp-newer gulp-imagemin`.
+
+Gulp-newer processa solo i file nuovi. In questo caso se l'immagine non è stata già processata viene copiata e successivamente la processo con Gulp-imagemin.
 
 ### Link utili
 

@@ -17,6 +17,9 @@ const webpackconfig = require('./webpack.config.js');
 const webpackstream = require('webpack-stream');
 /* JS Bundle */
 const merge = require('merge-stream');
+/* Image Minification */
+const newer = require('gulp-newer');
+const imagemin = require('gulp-imagemin');
 
 const appPath = {
   dist: {
@@ -24,12 +27,14 @@ const appPath = {
     root: 'app/',
     css: 'app/dist/css',
     js: 'app/dist/js',
+    img: 'app/dist/assets/images',
   },
   source: {
-    assets: 'src/assets/**/*',
+    assets: 'src/assets/**/*.json',
     sassSource: 'src/scss/**/*.scss',
     htmlSource: 'src/**/*.html',
     jsSource: 'src/js/**/*.js',
+    imgSource: 'src/assets/images/**',
   },
 };
 sass.compiler = require('node-sass');
@@ -46,11 +51,13 @@ function compileSass() {
       }),
     )
     .pipe(sass({ outputStyle: 'expanded' }).on('error', sass.logError));
-  return merge(sassFiles, bootstrapCSS)
-    //compact-compress-expanded
-    .pipe(concat('app.css'))
-    .pipe(dest(appPath.dist.css))
-    .pipe(browserSync.stream());
+  return (
+    merge(sassFiles, bootstrapCSS)
+      //compact-compress-expanded
+      .pipe(concat('app.css'))
+      .pipe(dest(appPath.dist.css))
+      .pipe(browserSync.stream())
+  );
 }
 
 /* Concat JavaScript files */
@@ -99,8 +106,28 @@ function cleanHTML() {
 }
 
 function copyAssets() {
-  return src(appPath.source.assets)
-    .pipe(dest(appPath.dist.assets));
+  return src(appPath.source.assets).pipe(dest(appPath.dist.assets));
+}
+
+function images() {
+  return src(appPath.source.imgSource)
+    .pipe(newer(appPath.dist.img))
+    .pipe(
+      imagemin([
+        imagemin.gifsicle({ interlaced: true }),
+        imagemin.jpegtran({ progressive: true }),
+        imagemin.optipng({ optimizationLevel: 5 }),
+        imagemin.svgo({
+          plugins: [
+            {
+              removeViewBox: false,
+              collapseGroups: true,
+            },
+          ],
+        }),
+      ]),
+    )
+    .pipe(dest(appPath.dist.img));
 }
 
 /* Watch for change */
@@ -116,7 +143,14 @@ function watchWork(done) {
 const html = series(copyHTML);
 const style = series(compileSass);
 const js = series(bundleJS);
-const build = series(cleanDist, parallel(style, html, js, copyAssets), serve, watchWork);
+const build = series(cleanDist, copyAssets, parallel(style, html, js, images), serve, watchWork);
 // exports.watchWork = watchWork; // make it private
 exports.default = build;
-exports.concat = series(cleanDist, watchWork, parallel(style, html, scripts, copyAssets), serve);
+exports.clean = cleanDist;
+exports.concat = series(
+  cleanDist,
+  copyAssets,
+  watchWork,
+  parallel(style, html, scripts, images),
+  serve,
+);
