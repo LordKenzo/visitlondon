@@ -141,3 +141,4 @@ https://www.joezimjs.com/javascript/complete-guide-upgrading-gulp-4/
 https://github.com/jeromecoupe/jeromecoupe.github.io/blob/master/gulpfile.js
 https://github.com/gulpjs/vinyl-fs/issues/292
 https://www.toptal.com/front-end/webpack-browserify-gulp-which-is-better
+https://www.bootply.com/h6mvwRaiCl
