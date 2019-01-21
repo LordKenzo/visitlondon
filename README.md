@@ -155,6 +155,12 @@ Installa: `npm install -D gulp-newer gulp-imagemin`.
 
 Gulp-newer processa solo i file nuovi. In questo caso se l'immagine non è stata già processata viene copiata e successivamente la processo con Gulp-imagemin.
 
+# HTML Parziali
+
+Installo: `npm install gulp-preprocess --save-dev`.
+
+Posso togliere il task di copyHTML e fare un unico task html per il preprocessamento dei file parzili, oppure farlo nel task copyHTML.
+
 ### Link utili
 
 https://www.joezimjs.com/javascript/complete-guide-upgrading-gulp-4/

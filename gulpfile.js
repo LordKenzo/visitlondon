@@ -20,6 +20,8 @@ const merge = require('merge-stream');
 /* Image Minification */
 const newer = require('gulp-newer');
 const imagemin = require('gulp-imagemin');
+/* HTML Parziali */
+const preprocess = require('gulp-preprocess');
 
 const appPath = {
   dist: {
@@ -96,8 +98,16 @@ async function serve(/*done*/) {
 }
 
 /* Copy Source files */
-function copyHTML() {
-  return src(appPath.source.htmlSource).pipe(dest(appPath.dist.root));
+function copyHTML(done) {
+  return src(appPath.source.htmlSource)
+    .pipe(
+      plumber(err => {
+        console.log(err);
+        done();
+      }),
+    )
+    .pipe(preprocess({ context: { NODE_ENV: 'production', DEBUG: true } })) // To set environment variables in-line
+    .pipe(dest(appPath.dist.root));
 }
 
 /* Remove HTML file from dist */

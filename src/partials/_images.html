@@ -1,0 +1,26 @@
+<div class="container">
+  <h1 class="my-4 text-center text-lg-left">Thumbnail Gallery</h1>
+
+  <div class="row text-center text-lg-left">
+    <div id="gallery"></div>
+    <script id="template" type="x-tmpl-mustache">
+      {{#gallery}}
+
+
+      <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+
+        <a href="#" class="d-block h-100">
+          <figure class="figure">
+              <img class="figure-img img-fluid rounded" src="dist/assets/images/{{image}}" alt="{{destiny}}">
+              <figcaption class="figure-caption">{{destiny}}</figcaption>
+            </figure>
+
+        </a>
+      </div>
+
+
+      {{/gallery}}
+    </script>
+  </div>
+</div>
+<!-- /.container -->
