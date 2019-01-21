@@ -119,12 +119,25 @@ Attenzione, questa task concatena file JavaScript, per creare un bundle più ser
 npm i -D @babel/core @babel/preset-env babel-loader gulp-plumber gulp-uglify webpack webpack-stream
 ```
 
-per creare un bundle con webpack e babel e fare la minificazione con uglify. In questo modo posso scrivere anche codice ES6.
+# Bundle
+
+Per creare un bundle con webpack e babel e fare la minificazione con uglify. In questo modo posso scrivere anche codice ES6 e creare codice JavaScript con dipendenze con require o import.
 
 Ho creato in più il file .babelrc ed il file di webpack.config.js ;)
+
+# Bundle Managers: Browserify - Webpack
+
+Un bludner è un sistema che mi permette di combinare gli assets statici, con lo scopo di ridurre le richieste HTTP e migliorare le performance grazie ad una ottimizzazione delle risorse richieste, come la compressione.
+Browserify è un bundle nato per eseguire codice NodeJS nel browser, inoltre combina moduli separti in un unico file. A differenza di Webpack, Browserify non ha caratteristiche da task runner, quindi non è possibile effettuare concatenamenti, eseguire test o effettuare analisi di linting sul codice, ecc..., per questo viene usato sempre in combinazione con Gulp o Grunt. Con Webpack possiamo fare a meno sia di Gulp che di Grunt.
+La scelta ad oggi è orientata ad utilizzare Webpack in solitaria come bundler e task runner, anche perchè framework importanti come Angular utilizzano questa scelta.
+
+# Bootstrap e Jquery
+
+Installo: `npm i bootstrap popper.js jquery`
 
 ### Link utili
 
 https://www.joezimjs.com/javascript/complete-guide-upgrading-gulp-4/
 https://github.com/jeromecoupe/jeromecoupe.github.io/blob/master/gulpfile.js
 https://github.com/gulpjs/vinyl-fs/issues/292
+https://www.toptal.com/front-end/webpack-browserify-gulp-which-is-better

@@ -16,6 +16,7 @@ const webpack = require('webpack');
 const webpackconfig = require('./webpack.config.js');
 const webpackstream = require('webpack-stream');
 /* JS Bundle */
+const merge = require('merge-stream');
 
 const appPath = {
   dist: {
@@ -33,16 +34,19 @@ sass.compiler = require('node-sass');
 
 /* Styles */
 function compileSass() {
-  // Returning a stream
-  console.log('compile Sass');
-  return src(appPath.source.sassSource)
+  const bootstrapCSS = src('./node_modules/bootstrap/dist/css/bootstrap.css');
+
+  const sassFiles = src(appPath.source.sassSource)
     .pipe(
       autoprefixer({
         browsers: ['last 2 versions'],
         cascade: false,
       }),
     )
-    .pipe(sass({ outputStyle: 'expanded' }).on('error', sass.logError)) //compact-compress-expanded
+    .pipe(sass({ outputStyle: 'expanded' }).on('error', sass.logError));
+  return merge(sassFiles, bootstrapCSS)
+    //compact-compress-expanded
+    .pipe(concat('app.css'))
     .pipe(dest(appPath.dist.css))
     .pipe(browserSync.stream());
 }
