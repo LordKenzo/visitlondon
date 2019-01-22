@@ -1,21 +1,22 @@
 const { src, dest, series, parallel, watch } = require('gulp');
+/* Transpiler SASS */
 const sass = require('gulp-sass');
-// docs: https://browsersync.io/docs/gulp
+/* Server */ // docs: https://browsersync.io/docs/gulp
 const browserSync = require('browser-sync');
 const server = browserSync.create();
+/* CSS Autoprefixer */
 const autoprefixer = require('gulp-autoprefixer');
+/* Clean Folders */
 const clean = require('gulp-clean');
+/* Concat per JS */
 const concat = require('gulp-concat');
-/* JS Bundle
-npm i -D @babel/core @babel/preset-env babel-loader gulp-plumber gulp-uglify webpack webpack-stream
-
-*/
+/* JS Bundle */
 const plumber = require('gulp-plumber');
 const uglify = require('gulp-uglify');
 const webpack = require('webpack');
 const webpackconfig = require('./webpack.config.js');
 const webpackstream = require('webpack-stream');
-/* JS Bundle */
+/* Utility for merge files */
 const merge = require('merge-stream');
 /* Image Minification */
 const newer = require('gulp-newer');
@@ -26,8 +27,14 @@ const preprocess = require('gulp-preprocess');
 const cssnano = require('cssnano');
 const postcss = require('gulp-postcss');
 const rename = require('gulp-rename');
+/* HTML Minification */
+const htmlmin = require('gulp-htmlmin');
+/* Uility for use an if inside Gulp Pipe */
+const gulpif = require('gulp-if');
+/* A web server for testing in production */
+const gulpConnect = require('gulp-connect');
 
-const NODE_ENV = 'production';
+const context = process.env.NODE_ENV === 'production' ? true : false;
 
 const appPath = {
   dist: {
@@ -40,15 +47,35 @@ const appPath = {
   source: {
     assets: 'src/assets/**/*.json',
     sassSource: 'src/scss/**/*.scss',
-    htmlSource: 'src/**/*.html',
+    htmlSource: 'src/*.html',
     jsSource: 'src/js/**/*.js',
     imgSource: 'src/assets/images/**',
   },
 };
 sass.compiler = require('node-sass');
 
+/* Remove files from dist */
+function cleanDist(done) {
+  return src(appPath.dist.root, { allowEmpty: true, read: false, force: true })
+    .pipe(plumber( err => {
+      console.log(`Clean Dist Folder error: ${err}`);
+      done()
+    }))
+    .pipe(clean());
+}
+
+/* Copy Assets Folder to Dist Assets Folder */
+function copyAssets(done) {
+  return src(appPath.source.assets)
+    .pipe(plumber( err => {
+      console.log(`Asset copy error: ${err}`);
+      done()
+    }))
+    .pipe(dest(appPath.dist.assets));
+}
+
 /* Styles */
-function compileSass() {
+function generateStyle() {
   const bootstrapCSS = src('./node_modules/bootstrap/dist/css/bootstrap.css');
 
   const sassFiles = src(appPath.source.sassSource)
@@ -58,55 +85,42 @@ function compileSass() {
         cascade: false,
       }),
     )
-    .pipe(sass({ outputStyle: 'expanded' }).on('error', sass.logError));
-  return (
-    merge(sassFiles, bootstrapCSS)
-      //compact-compress-expanded
-      .pipe(concat('app.css'))
-      .pipe(rename({ suffix: NODE_ENV === 'production' ? '.min' : '' }))
-      .pipe(postcss(NODE_ENV === 'production' ? [cssnano()] : []))
-      .pipe(dest(appPath.dist.css))
-      .pipe(browserSync.stream())
-  );
+    .pipe(sass({ outputStyle: 'expanded' }).on('error', sass.logError)); //alternative: compact-compress-expanded
+  return merge(sassFiles, bootstrapCSS)
+    .pipe(concat('app.css'))
+    .pipe(gulpif(context, rename({ suffix:'.min' })))
+    .pipe(gulpif(context, postcss([cssnano()])))
+    .pipe(dest(appPath.dist.css))
+    .pipe(browserSync.stream())
 }
 
-/* Concat JavaScript files */
-function scripts() {
-  return src(appPath.source.jsSource)
-    .pipe(concat('main.bundle.js'))
-    .pipe(dest(appPath.dist.js));
-}
-
+/* Generate unique JS file with weboack and minify*/
 function bundleJS() {
   return (
     src([appPath.source.jsSource])
       .pipe(plumber())
       .pipe(webpackstream(webpackconfig, webpack, function(err, stats) {}))
-      .pipe(uglify())
+      .pipe(gulpif(context, uglify()))
       // folder only, filename is specified in webpack config
       .pipe(dest(appPath.dist.js))
       .pipe(server.stream())
   );
 }
 
-/* Remove Scripts file from dist */
-function cleanDist() {
-  return src(appPath.dist.root, { allowEmpty: true, read: false, force: true }).pipe(clean());
-}
-
-/* Server */
-async function serve(/*done*/) {
+/* Test Server */
+async function serve() {
   console.log('Start Server');
   await server.init({
     server: {
       baseDir: appPath.dist.root,
     },
+    watch: !context
   });
-  // done();
 }
 
-/* Copy Source files */
-function copyHTML(done) {
+/* Generate HTML */
+
+function bundleHTML(done) {
   return src(appPath.source.htmlSource)
     .pipe(
       plumber(err => {
@@ -114,7 +128,19 @@ function copyHTML(done) {
         done();
       }),
     )
-    .pipe(preprocess({ context: { NODE_ENV, DEBUG: true } })) // To set environment variables in-line
+    .pipe(preprocess({ context: { NODE_ENV: process.env.NODE_ENV, DEBUG: true } })) // To set environment variables in-line
+    .pipe(dest(appPath.dist.root));
+}
+
+function minifyHTML() {
+  return src(appPath.dist.root + '/**/*.html')
+    .pipe(
+      plumber(err => {
+        console.log(err);
+        done();
+      }),
+    )
+    .pipe(htmlmin({collapseWhitespace: true}))
     .pipe(dest(appPath.dist.root));
 }
 
@@ -123,11 +149,8 @@ function cleanHTML() {
   return src(appPath.dist.root + '/**/*.html', { read: false, force: true }).pipe(clean());
 }
 
-function copyAssets() {
-  return src(appPath.source.assets).pipe(dest(appPath.dist.assets));
-}
-
-function images() {
+/* Minify Images */
+function generateImages() {
   return src(appPath.source.imgSource)
     .pipe(newer(appPath.dist.img))
     .pipe(
@@ -150,25 +173,19 @@ function images() {
 
 /* Watch for change */
 function watchWork(done) {
-  watch(appPath.source.sassSource).on('all', compileSass);
-  watch(appPath.source.htmlSource).on('all', series(cleanHTML, copyHTML));
+  watch(appPath.source.sassSource).on('all', generateStyle);
+  watch(appPath.source.htmlSource).on('all', series(cleanHTML, bundleHTML));
   watch(appPath.source.jsSource).on('change', bundleJS);
-  watch(appPath.dist.root).on('change', server.reload);
+  watch(appPath.dist.root).on('all', server.reload);
   done();
 }
 
 /* Tasks */
-const html = series(copyHTML);
-const style = series(compileSass);
-const js = series(bundleJS);
-const build = series(cleanDist, copyAssets, parallel(style, html, js, images), serve, watchWork);
-// exports.watchWork = watchWork; // make it private
-exports.default = build;
+const generateHTML = series(bundleHTML, minifyHTML);
+
+const build = series(cleanDist, copyAssets, parallel(generateStyle, generateHTML, bundleJS, generateImages), serve);
+const dev = series(cleanDist, copyAssets, parallel(generateStyle, bundleHTML, bundleJS, generateImages), serve, watchWork);
+
+exports.build = build;
+exports.default = dev;
 exports.clean = cleanDist;
-exports.concat = series(
-  cleanDist,
-  copyAssets,
-  watchWork,
-  parallel(style, html, scripts, images),
-  serve,
-);

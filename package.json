@@ -4,7 +4,9 @@
   "description": "Web workflow with NPM, SASS, Gulp and More",
   "main": "index.js",
   "scripts": {
-    "start": "webpack -w",
+    "start": "NODE_ENV=development gulp",
+    "build": "NODE_ENV=production gulp build",
+    "serve": "webpack -w",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -34,6 +36,9 @@
     "gulp-clean": "^0.4.0",
     "gulp-concat": "^2.6.1",
     "gulp-concat-css": "^3.1.0",
+    "gulp-connect": "^5.7.0",
+    "gulp-htmlmin": "^5.0.1",
+    "gulp-if": "^2.0.2",
     "gulp-imagemin": "^5.0.3",
     "gulp-newer": "^1.4.0",
     "gulp-plumber": "^1.2.1",

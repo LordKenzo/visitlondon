@@ -1,6 +1,19 @@
-# workflow
+# My Personal Worflow with SASS, NPM, Gulp and Webpack
 
-Web workflow with NPM, SASS, Gulp and More
+Web workflow with NPM, SASS, Gulp and Webpack
+Run with:
+
+# Instructions
+
+1.- Clone this repo or download it from github;
+2.- Make sure you have these dependencies installed globally:
+  - [node.js] (http://nodejs.org)
+  - [git] (http://git-scm.com)
+  - [gulp] (http://gulpjs.com)
+  - [webpack] (https://webpack.js.org)
+3.- Run `npm i` to install all the project dependencies;
+4.- Run `npm start` for developing or `npm run build` for production;
+5.- Use gulp command for specifics tasks.
 
 ## Installation Step
 
@@ -88,7 +101,7 @@ exports.default = callbackError;
 
 In Gulp@4 le task sincrone non sono più supportate per evitare errori subdoli difficili da scovare, come scordarsi di tornare uno streams da una task. Per questo la nostra task
 
-# Auto-prefixer e clean
+## Auto-prefixer e clean
 
 Installo:
 
@@ -131,19 +144,19 @@ Gulp-plumber mi permette di gestire eventuali errori, es un task che farò più 
 )
 ```
 
-# Bundle con Webpack
+## Bundle con Webpack
 
 Per creare un bundle con webpack e babel e fare la minificazione con uglify. In questo modo posso scrivere anche codice ES6 e creare codice JavaScript con dipendenze con require o import.
 
 Ho creato in più il file .babelrc ed il file di webpack.config.js ;)
 
-# Bundle Managers: Browserify - Webpack
+## Bundle Managers: Browserify - Webpack
 
 Un bludner è un sistema che mi permette di combinare gli assets statici, con lo scopo di ridurre le richieste HTTP e migliorare le performance grazie ad una ottimizzazione delle risorse richieste, come la compressione.
 Browserify è un bundle nato per eseguire codice NodeJS nel browser, inoltre combina moduli separti in un unico file. A differenza di Webpack, Browserify non ha caratteristiche da task runner, quindi non è possibile effettuare concatenamenti, eseguire test o effettuare analisi di linting sul codice, ecc..., per questo viene usato sempre in combinazione con Gulp o Grunt. Con Webpack possiamo fare a meno sia di Gulp che di Grunt.
 La scelta ad oggi è orientata ad utilizzare Webpack in solitaria come bundler e task runner, anche perchè framework importanti come Angular utilizzano questa scelta.
 
-# Bootstrap e Jquery
+## Bootstrap e Jquery
 
 Installo: `npm i bootstrap popper.js jquery`.
 
@@ -161,19 +174,19 @@ con:
 $('#gallery').replaceWith(showTemplate);
 ```
 
-# Image Minification
+## Image Minification
 
 Installa: `npm install -D gulp-newer gulp-imagemin`.
 
 Gulp-newer processa solo i file nuovi. In questo caso se l'immagine non è stata già processata viene copiata e successivamente la processo con Gulp-imagemin.
 
-# HTML Parziali
+## HTML Parziali
 
 Installo: `npm install gulp-preprocess --save-dev`.
 
 Posso togliere il task di copyHTML e fare un unico task html per il preprocessamento dei file parzili, oppure farlo nel task copyHTML.
 
-# Minificazione dei CSS
+## Minificazione dei CSS
 
 Uso CSSNano che passo come plugin a Gulp-postcss:
 
@@ -183,6 +196,53 @@ npm i -D cssnano gulp-postcss
 
 Ad es. sono passato da 189k a 152k.
 
+## Minificazione dell'HTML
+
+Per la minificazione dell'HTML vado ad installare `npm i -D gulp-minhmtl` e nella task vado a prendere come sorgente i file uniti e messi nella dist folder in quanto la task di minificazione viene avviata dopo la task di unificazione dei file parziali. Nella cartella "sorgente" che indico, specifico i file HTML:
+
+```js
+ return src(appPath.dist.root + '/**/*.html')
+```
+
+## Refactoring
+
+Abbiamo una serie di task:
+
+- Compressione: CSS, HTML, IMAGES e JS
+- Bundle (concatenamento di file parziali): CSS, HTML (il bundle vero di JS lo faccio gestire a Webpack), anche se ho una task per il concatenamento di JS in Gulp
+- Copia da sorgente a destinazione di ASSETS, CSS, HTML e JS
+- Compilazione: SASS a CSS
+- Watching
+- Serve
+
+La task di build fa:
+series(cleanDist, copyAssets, parallel(style, html, js, images), serve, watchWork);
+style => generateStyle
+
+Vado ad installare gulp-if: `npm i -D gulp-if`
+Vado a definire nel package.json una modalità di avvio che mi setta il NODE_ENV:
+
+```json
+"start":"NODE_ENV=development gulp",
+"build":"NODE_ENV=production gulp",
+```
+
+Aggiungo questo controllo nel gulpfile:
+
+```js
+const context = process.env.NODE_ENV === 'production' ? true : false;
+```
+
+e vado ad utilizzare gulpif in questa maniera:
+
+```js
+.pipe(gulpif(context, rename({ suffix:'.min' }))) // Rinomino in min i file minificati
+.pipe(gulpif(context, postcss([cssnano()]))) // Eseguo la compressione CSS
+.pipe(gulpif(context, uglify())) // Compressione del JS
+```
+
+Nella build per la produzione non avrò bisogno di un live-server con resync come brower-sync, userò un web server chiamato gulp-connect. Altrimenti imposto il `watch: false` di browser-sync magari in questo modo: `watch: !context`.
+
 ### Link utili
 
 https://www.joezimjs.com/javascript/complete-guide-upgrading-gulp-4/
@@ -190,3 +250,4 @@ https://github.com/jeromecoupe/jeromecoupe.github.io/blob/master/gulpfile.js
 https://github.com/gulpjs/vinyl-fs/issues/292
 https://www.toptal.com/front-end/webpack-browserify-gulp-which-is-better
 https://www.bootply.com/h6mvwRaiCl
+https://medium.com/devux/minifying-your-css-js-html-files-using-gulp-2113d7fcbd16
