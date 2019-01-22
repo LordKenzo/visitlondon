@@ -5,15 +5,15 @@ Run with:
 
 # Instructions
 
-1.- Clone this repo or download it from github;
-2.- Make sure you have these dependencies installed globally:
+1.  Clone this repo or download it from github;
+2.  Make sure you have these dependencies installed globally:
   - [node.js] (http://nodejs.org)
   - [git] (http://git-scm.com)
   - [gulp] (http://gulpjs.com)
   - [webpack] (https://webpack.js.org)
-3.- Run `npm i` to install all the project dependencies;
-4.- Run `npm start` for developing or `npm run build` for production;
-5.- Use gulp command for specifics tasks.
+3.  Run `npm i` to install all the project dependencies;
+4.  Run `npm start` for developing or `npm run build` for production;
+5.  Use gulp command for specifics tasks.
 
 ## Installation Step
 
