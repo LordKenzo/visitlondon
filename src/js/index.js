@@ -1,1 +1,1 @@
-import './scripts';
+import './script';

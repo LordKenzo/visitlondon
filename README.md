@@ -243,6 +243,100 @@ e vado ad utilizzare gulpif in questa maniera:
 
 Nella build per la produzione non avrò bisogno di un live-server con resync come brower-sync, userò un web server chiamato gulp-connect. Altrimenti imposto il `watch: false` di browser-sync magari in questo modo: `watch: !context`.
 
+## Typescript
+
+Installo:
+```
+npm install --save-dev typescript ts-loader tslint
+```
+
+e creo il file di configurazione tsconfig.json con `tsc --init`.
+
+Installo inoltre le declaration types per node e jQuery:
+
+```
+npm i @types/node @types/jquery @types/mustache @types/bootstrap -D
+```
+
+e imposto il file di configurazione così:
+
+```json
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "es6",
+    "allowJs": true,
+    "checkJs": true,
+    "jsx": "react",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "removeComments": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "moduleResolution": "node",
+    "types": ["node"],
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts"
+  ]
+}
+```
+
+TSLINT Configuration:
+```json
+{
+  "extends": "tslint:recommended",
+  "rulesDirectory": [],
+  "rules": {
+    "max-line-length": {
+        "options": [120]
+    },
+    "quotemark": [true, "single", "jsx-double"],
+    "only-arrow-functions": false,
+    "no-empty": false,
+    "new-parens": true,
+    "no-arg": true,
+    "no-bitwise": true,
+    "no-conditional-assignment": true,
+    "no-consecutive-blank-lines": false,
+    "no-console": {
+      "severity": "warning",
+      "options": ["debug", "info", "log", "time", "timeEnd", "trace"]
+    }
+  },
+  "jsRules": {
+    "max-line-length": {
+        "options": [120]
+    }
+  },
+  "linterOptions": {
+    "exclude": ["**/node_modules/**"]
+  }
+}
+```
+
+### Babelrc
+
+```json
+{
+  "presets": [
+    "@babel/typescript"
+  ],
+  "plugins": [
+    "@babel/proposal-class-properties",
+    "@babel/proposal-object-rest-spread"
+  ]
+}
+```
+
 ### Link utili
 
 https://www.joezimjs.com/javascript/complete-guide-upgrading-gulp-4/
@@ -251,3 +345,8 @@ https://github.com/gulpjs/vinyl-fs/issues/292
 https://www.toptal.com/front-end/webpack-browserify-gulp-which-is-better
 https://www.bootply.com/h6mvwRaiCl
 https://medium.com/devux/minifying-your-css-js-html-files-using-gulp-2113d7fcbd16
+https://webpack.js.org/guides/typescript/
+https://www.typescriptlang.org/docs/handbook/tsconfig-json.html
+https://stackoverflow.com/questions/31173738/typescript-getting-error-ts2304-cannot-find-name-require
+https://palantir.github.io/tslint/usage/configuration/
+https://iamturns.com/typescript-babel/

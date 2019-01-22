@@ -17,7 +17,7 @@ const webpack = require('webpack');
 const webpackconfig = require('./webpack.config.js');
 const webpackstream = require('webpack-stream');
 /* Utility for merge files */
-const merge = require('merge-stream');
+const merge2 = require('merge2');
 /* Image Minification */
 const newer = require('gulp-newer');
 const imagemin = require('gulp-imagemin');
@@ -86,7 +86,7 @@ function generateStyle() {
       }),
     )
     .pipe(sass({ outputStyle: 'expanded' }).on('error', sass.logError)); //alternative: compact-compress-expanded
-  return merge(sassFiles, bootstrapCSS)
+  return merge2(bootstrapCSS, sassFiles)
     .pipe(concat('app.css'))
     .pipe(gulpif(context, rename({ suffix:'.min' })))
     .pipe(gulpif(context, postcss([cssnano()])))
