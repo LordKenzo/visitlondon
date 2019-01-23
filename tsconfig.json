@@ -1,9 +1,9 @@
 {
+  "compileOnSave": true,
   "compilerOptions": {
     "target": "es5",
     "module": "es6",
     "allowJs": true,
-    "checkJs": true,
     "jsx": "react",
     "sourceMap": true,
     "outDir": "./dist",
@@ -16,6 +16,11 @@
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+    "baseUrl": ".",
+    "paths": {
+      "src/*": ["./src/js/*"],
+      "src": ["./src"]
+    },
   },
   "include": [
     "src/**/*"

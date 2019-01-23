@@ -94,7 +94,7 @@ function generateStyle() {
     .pipe(browserSync.stream())
 }
 
-/* Generate unique JS file with weboack and minify*/
+/* Generate unique JS file with webpack and minify*/
 function bundleJS() {
   return (
     src([appPath.source.jsSource])

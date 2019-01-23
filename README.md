@@ -337,6 +337,29 @@ TSLINT Configuration:
 }
 ```
 
+### Testing
+
+#### karma
+
+karma is a test runner for JavaScript. karma support jasmine and mocha.
+
+#### Jasmine
+
+Jasmine is a BDD testing framework. Jasmine’s type is unit testing.
+
+Installo:
+```
+npm i -D @types/jasmine karma jasmine karma-webpack karma-chrome-launcher karma-jasmine karma-sourcemap-loader karma-coverage karma-jasmine-html-reporter karma-typescript
+```
+
+Se ho karma installato globalmente posso anche fare:
+
+```
+karma init my.conf.js
+```
+
+karma-typescript mi permette di scrivere Unit Test in TypeScript.
+
 ### Link utili
 
 https://www.joezimjs.com/javascript/complete-guide-upgrading-gulp-4/
